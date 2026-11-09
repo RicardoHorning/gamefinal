@@ -2,16 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O SHOW DA GESTÃO!!! - Game Show de Administração</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>O SHOW DA GESTÃO! - Game Show SENAI (600h)</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- PeerJS for P2P WebRTC Multiplayer -->
+    <!-- PeerJS for WebRTC Multiplayer -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -37,7 +37,7 @@
                     },
                     animation: {
                         'pulse-fast': 'pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'bounce-short': 'bounce 0.5s ease-in-out 2',
+                        'bounce-short': 'bounce 0.6s ease-in-out 2',
                     }
                 }
             }
@@ -51,14 +51,16 @@
             min-height: 100vh;
             color: #ffffff;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         .glass-panel {
-            background: rgba(30, 27, 75, 0.75);
+            background: rgba(30, 27, 75, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
         .gold-border {
@@ -71,18 +73,16 @@
         }
 
         .option-btn {
-            transition: transform 0.1s ease, filter 0.15s ease;
+            transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
         }
         .option-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
-        /* Timer animation stroke */
         .timer-ring {
             transition: stroke-dashoffset 1s linear;
         }
 
-        /* Bar Chart Animation */
         .chart-bar {
             transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -93,7 +93,7 @@
     <!-- HEADER / NAVIGATION BAR -->
     <header class="w-full max-w-6xl mx-auto flex justify-between items-center py-2.5 px-4 glass-panel rounded-2xl mb-4 gold-border">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="location.reload()">
-            <div class="bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-lg sm:text-xl tracking-wider shadow-lg flex items-center gap-2">
+            <div class="bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-base sm:text-xl tracking-wider shadow-lg flex items-center gap-2">
                 <i class="fa-solid fa-crown text-amber-900"></i>
                 <span>SHOW DA GESTÃO</span>
             </div>
@@ -122,7 +122,7 @@
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight gold-text-glow">O SHOW DA GESTÃO!</h1>
                 <p class="text-purple-200 text-sm max-w-md mx-auto">
-                    Teste seus conhecimentos nas 12 Unidades Curriculares do curso de Assistente Administrativo!
+                    Teste seus conhecimentos nas 12 Unidades Curriculares do curso de Assistente Administrativo do SENAI!
                 </p>
             </div>
 
@@ -131,7 +131,7 @@
                 <button onclick="initHostMode()" class="bg-gradient-to-br from-purple-700 to-indigo-800 hover:from-purple-600 hover:to-indigo-700 text-white p-4 rounded-2xl shadow-xl transition flex flex-col items-center justify-center text-center border border-purple-400/40 space-y-2">
                     <i class="fa-solid fa-desktop text-3xl text-amber-300"></i>
                     <span class="font-bold text-base">Criar Sala (Projetor/Host)</span>
-                    <span class="text-xs text-purple-200 opacity-80">Multiplayer WebRTC com Celulares</span>
+                    <span class="text-xs text-purple-200 opacity-80">Multiplayer WebRTC para a Sala</span>
                 </button>
 
                 <!-- Mode 2: Player Mobile WebRTC -->
@@ -166,7 +166,7 @@
                     <div id="host-room-code-display" class="font-mono text-5xl sm:text-6xl font-black text-amber-400 tracking-widest gold-text-glow">
                         <i class="fa-solid fa-spinner animate-spin text-3xl"></i>
                     </div>
-                    <p class="text-xs text-purple-200">Abra o jogo no celular dos alunos, clique em <b>"Entrar pelo Celular"</b> e digite o código acima!</p>
+                    <p class="text-xs text-purple-200">Abra o jogo nos celulares, clique em <b>"Entrar pelo Celular"</b> e digite o código acima!</p>
                 </div>
                 <!-- QR Code Box -->
                 <div class="flex flex-col items-center justify-center bg-white p-3 rounded-2xl border-2 border-amber-400 shadow-lg">
@@ -217,7 +217,7 @@
 
             <!-- Question Box -->
             <div class="glass-panel p-6 sm:p-10 rounded-3xl text-center min-h-[180px] flex flex-col justify-center items-center shadow-2xl border-2 border-amber-400/30">
-                <span id="question-uc-badge" class="text-xs uppercase font-bold text-amber-400 tracking-widest bg-amber-400/10 px-3 py-1 rounded-full mb-2 border border-amber-400/20">UC1 - FUNDAMENTOS DA COMUNICAÇÃO</span>
+                <span id="question-uc-badge" class="text-xs uppercase font-bold text-amber-400 tracking-widest bg-amber-400/10 px-3 py-1 rounded-full mb-2 border border-amber-400/20">UC1 - COMUNICAÇÃO</span>
                 <h2 id="question-text" class="text-2xl sm:text-3xl font-extrabold text-white leading-relaxed">
                     Carregando pergunta...
                 </h2>
@@ -344,15 +344,21 @@
             </div>
         </section>
 
-        <!-- ================= SCREEN 7: PLAYER LOBBY (WAITING) ================= -->
+        <!-- ================= SCREEN 7: PLAYER LOBBY (WAITING & READY TOUCH UNLOCK) ================= -->
         <section id="screen-player-lobby" class="hidden w-full max-w-md glass-panel p-8 rounded-3xl text-center space-y-6">
             <div class="animate-bounce text-6xl" id="player-avatar-display">🦊</div>
             <div>
                 <h2 class="text-2xl font-bold text-amber-300" id="player-welcome-name">Olá, Jogador!</h2>
                 <p class="text-emerald-400 font-semibold mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Você está conectado!</p>
             </div>
+            
+            <button id="btn-player-ready" onclick="confirmPlayerReadyGesture()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black py-3.5 rounded-xl text-base shadow-lg transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-thumbs-up"></i>
+                <span>ESTOU PRONTO! 🚀</span>
+            </button>
+
             <div class="bg-purple-950/80 p-4 rounded-2xl border border-purple-500/30">
-                <p class="text-sm text-purple-200 animate-pulse-fast">Olhe para o projetor... O Show da Gestão vai começar!</p>
+                <p id="player-lobby-status" class="text-sm text-purple-200">Clique em "ESTOU PRONTO" acima e olhe para o projetor...</p>
             </div>
         </section>
 
@@ -559,17 +565,17 @@
     </main>
 
     <!-- Custom Toast Message -->
-    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 opacity-0 pointer-events-none bg-slate-950 text-white px-6 py-3 rounded-2xl border border-amber-400/50 shadow-2xl z-50 text-sm font-semibold flex items-center space-x-2">
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 opacity-0 pointer-events-none bg-slate-950 text-white px-6 py-3 rounded-2xl border border-amber-400/50 shadow-2xl z-50 text-sm font-semibold flex items-center space-x-2 transition-all duration-300">
         <i id="toast-icon" class="fa-solid fa-circle-info text-amber-400"></i>
         <span id="toast-msg">Mensagem</span>
     </div>
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        /* --- 25 QUESTIONS BASED ON ASSISTANT ADMINISTRATOR 600H CURRICULUM (12 UCs) --- */
+        /* --- 25 QUESTIONS COVERING ALL 12 UCs OF SENAI ASSISTANT ADMINISTRATOR (600h) --- */
         const QUIZ_QUESTIONS = [
             {
-                uc: "UC1 - Fundamentos da Comunicação",
+                uc: "UC01 - Fundamentos da Comunicação",
                 question: "O que caracteriza o conceito de 'ruído' no processo de comunicação empresarial?",
                 options: [
                     "A velocidade da conexão de internet",
@@ -580,7 +586,7 @@
                 answer: 1
             },
             {
-                uc: "UC1 - Fundamentos da Comunicação",
+                uc: "UC01 - Fundamentos da Comunicação",
                 question: "Ao redigir um e-mail corporativo formal, qual é a boa prática recomendada para a linha de 'Assunto'?",
                 options: [
                     "Deixar o campo em branco para gerar expectativa",
@@ -591,7 +597,7 @@
                 answer: 2
             },
             {
-                uc: "UC2 - Relações Socioprofissionais e Ética",
+                uc: "UC02 - Relações Socioprofissionais e Ética",
                 question: "O que é considerado um 'Conflito de Interesses' no ambiente corporativo?",
                 options: [
                     "Divergência de opiniões em um debate técnico",
@@ -602,7 +608,7 @@
                 answer: 1
             },
             {
-                uc: "UC2 - Relações Socioprofissionais e Ética",
+                uc: "UC02 - Relações Socioprofissionais e Ética",
                 question: "A quem se destina a proteção integral garantida pelo Estatuto da Criança e do Adolescente (ECA)?",
                 options: [
                     "Apenas a trabalhadores maiores de 18 anos",
@@ -613,7 +619,7 @@
                 answer: 1
             },
             {
-                uc: "UC3 - Saúde e Segurança do Trabalho",
+                uc: "UC03 - Saúde e Segurança do Trabalho",
                 question: "O que significa a sigla GRO estabelecida pela Norma Regulamentadora NR-1?",
                 options: [
                     "Guia de Requisitos Operacionais",
@@ -624,7 +630,7 @@
                 answer: 1
             },
             {
-                uc: "UC3 - Saúde e Segurança do Trabalho",
+                uc: "UC03 - Saúde e Segurança do Trabalho",
                 question: "Segundo a NR-17 (Ergonomia), qual é o objetivo principal ao adaptar o posto de trabalho informatizado?",
                 options: [
                     "Reduzir o custo com energia elétrica da empresa",
@@ -635,7 +641,7 @@
                 answer: 1
             },
             {
-                uc: "UC4 - Raciocínio Lógico e Análise de Dados",
+                uc: "UC04 - Raciocínio Lógico e Análise",
                 question: "Se uma impressora industrial produz 150 relatórios em 3 horas, quantos relatórios produzirá em 8 horas no mesmo ritmo?",
                 options: [
                     "350 relatórios",
@@ -646,7 +652,7 @@
                 answer: 1
             },
             {
-                uc: "UC4 - Raciocínio Lógico e Análise de Dados",
+                uc: "UC04 - Raciocínio Lógico e Análise",
                 question: "Um pedido de suprimentos de R$ 5.000,00 obteve um desconto de 12% para pagamento à vista. Qual é o valor final a pagar?",
                 options: [
                     "R$ 4.400,00",
@@ -657,7 +663,7 @@
                 answer: 0
             },
             {
-                uc: "UC5 - Transformação Digital no Setor Industrial",
+                uc: "UC05 - Transformação Digital",
                 question: "Qual é o papel da Internet das Coisas (IoT) no contexto da Indústria 4.0?",
                 options: [
                     "Conectar equipamentos e sensores à rede para coletar e trocar dados em tempo real",
@@ -668,7 +674,7 @@
                 answer: 0
             },
             {
-                uc: "UC5 - Transformação Digital no Setor Industrial",
+                uc: "UC05 - Transformação Digital",
                 question: "O que é um sistema ERP (Enterprise Resource Planning)?",
                 options: [
                     "Um editor de apresentações visuais",
@@ -679,7 +685,7 @@
                 answer: 1
             },
             {
-                uc: "UC6 - Planejamento e Organização do Trabalho",
+                uc: "UC06 - Planejamento e Organização",
                 question: "Na ferramenta de gestão 5W2H, o que representa o elemento 'Why' (Por quê)?",
                 options: [
                     "O responsável pela execução da tarefa",
@@ -690,7 +696,7 @@
                 answer: 2
             },
             {
-                uc: "UC6 - Planejamento e Organização do Trabalho",
+                uc: "UC06 - Planejamento e Organização",
                 question: "Na análise SWOT (Matriz FOFA), quais elementos correspondem ao ambiente INTERNO da organização?",
                 options: [
                     "Oportunidades e Ameaças",
@@ -701,7 +707,7 @@
                 answer: 1
             },
             {
-                uc: "UC7 - Fundamentos da Administração",
+                uc: "UC07 - Fundamentos da Administração",
                 question: "Quais são as quatro funções fundamentais do processo administrativo (PODC)?",
                 options: [
                     "Pesquisar, Operar, Dirigir e Comercializar",
@@ -712,7 +718,7 @@
                 answer: 1
             },
             {
-                uc: "UC7 - Fundamentos da Administração",
+                uc: "UC07 - Fundamentos da Administração",
                 question: "Qual gráfico representa visualmente a estrutura formal, setores e hierarquia de uma empresa?",
                 options: [
                     "Fluxograma",
@@ -723,7 +729,7 @@
                 answer: 2
             },
             {
-                uc: "UC8 - Gestão de Pessoas",
+                uc: "UC08 - Gestão de Pessoas",
                 question: "Em atendimento à LGPD no processo de Admissão, qual conduta o assistente deve adotar com dados de candidatos?",
                 options: [
                     "Solicitar todos os documentos pessoais e bancários antes da entrevista",
@@ -734,7 +740,7 @@
                 answer: 1
             },
             {
-                uc: "UC8 - Gestão de Pessoas",
+                uc: "UC08 - Gestão de Pessoas",
                 question: "O indicador de 'Turnover' na Gestão de Pessoas mede:",
                 options: [
                     "A pontualidade diária dos colaboradores",
@@ -745,7 +751,7 @@
                 answer: 1
             },
             {
-                uc: "UC9 - Marketing, Comercial e Vendas",
+                uc: "UC09 - Marketing, Comercial e Vendas",
                 question: "Quais elementos formam o tradicional Mix de Marketing (4 Ps)?",
                 options: [
                     "Pessoas, Processos, Pesquisa e Pós-venda",
@@ -756,7 +762,7 @@
                 answer: 1
             },
             {
-                uc: "UC9 - Marketing, Comercial e Vendas",
+                uc: "UC09 - Marketing, Comercial e Vendas",
                 question: "No Funil de Vendas, qual fase caracteriza o momento em que o potencial cliente demonstra interesse claro e fornece contato?",
                 options: [
                     "Atração (Visitante)",
@@ -854,8 +860,25 @@
             "R$ 850.000", "R$ 900.000", "R$ 950.000", "R$ 980.000", "1 MILHÃO DE PONTOS!"
         ];
 
-        /* --- STATE VARIABLES --- */
+        /* --- STUN/ICE CONFIGURATION FOR STABLE NAT TRAVERSAL IN CELLULAR & WI-FI NETWORKS --- */
+        const PEER_CONFIG = {
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' }
+                ]
+            },
+            debug: 1
+        };
+
+        /* --- GLOBAL STATE VARIABLES --- */
         let soundEnabled = true;
+        let audioCtx = null;
+        let audioUnlocked = false;
+
         let peer = null;
         let isHost = false;
         let roomCode = '';
@@ -865,7 +888,7 @@
         let timeRemaining = 20;
         const QUESTION_TIME_LIMIT = 20;
 
-        // Player State
+        // Player Mobile State
         let hostConn = null;
         let myPlayerName = '';
         let myPlayerAvatar = '🦊';
@@ -881,22 +904,32 @@
         let lifelineUnivUsed = false;
         let lifelineCartasUsed = false;
 
-        /* --- AUDIO SYNTHESIS (Web Audio API) --- */
-        let audioCtx = null;
-        function getAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        /* --- AUDIO SYNTHESIS WITH MOBILE SAFEGUARDS --- */
+        function initAudioOnUserGesture() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                audioUnlocked = true;
+            } catch (e) {
+                console.log("Audio unlock muted/deferred:", e);
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            return audioCtx;
         }
 
         function playSound(type) {
             if (!soundEnabled) return;
             try {
-                const ctx = getAudioContext();
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume().catch(() => {});
+                }
+                
+                const ctx = audioCtx;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.connect(gain);
@@ -948,20 +981,23 @@
                     });
                 }
             } catch (e) {
-                console.error("Audio error:", e);
+                // Ignore audio errors on non-supported platforms
             }
         }
 
         function toggleSound() {
+            initAudioOnUserGesture();
             soundEnabled = !soundEnabled;
             const icon = document.getElementById('sound-icon');
             icon.className = soundEnabled ? 'fa-solid fa-volume-high text-amber-300' : 'fa-solid fa-volume-xmark text-red-400';
             showToast(soundEnabled ? 'Sons ativados' : 'Sons desativados');
         }
 
-        /* --- UI HELPERS & SCREEN NAVIGATION --- */
+        /* --- UI HELPERS & NAVIGATION --- */
         window.addEventListener('DOMContentLoaded', () => {
             renderAvatarGrid();
+            document.body.addEventListener('touchstart', initAudioOnUserGesture, { once: true });
+            document.body.addEventListener('click', initAudioOnUserGesture, { once: true });
         });
 
         function showScreen(screenId) {
@@ -1012,6 +1048,7 @@
                 btn.className = `p-2 text-2xl rounded-xl border-2 transition ${idx === selectedAvatarIdx ? 'border-amber-400 bg-amber-400/20' : 'border-purple-500/30 bg-slate-900/50 hover:bg-purple-900/30'}`;
                 btn.innerText = av;
                 btn.onclick = () => {
+                    initAudioOnUserGesture();
                     selectedAvatarIdx = idx;
                     myPlayerAvatar = av;
                     renderAvatarGrid();
@@ -1024,6 +1061,7 @@
 
         /* ================= MODE 1: WEBRTC HOST MULTIPLAYER ================= */
         function initHostMode() {
+            initAudioOnUserGesture();
             playSound('click');
             isHost = true;
             roomCode = generateShortCode(4);
@@ -1035,20 +1073,24 @@
 
             showScreen('screen-host-lobby');
 
-            // Render QR Code
+            // Render QR Code for Host
             const qrContainer = document.getElementById('qrcode-container');
             qrContainer.innerHTML = '';
             const playerUrl = `${window.location.origin}${window.location.pathname}?code=${roomCode}`;
-            new QRCode(qrContainer, {
-                text: playerUrl,
-                width: 120,
-                height: 120,
-                colorDark: "#0f0c20",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            try {
+                new QRCode(qrContainer, {
+                    text: playerUrl,
+                    width: 120,
+                    height: 120,
+                    colorDark: "#0f0c20",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (e) {
+                console.log("QR Code render error:", e);
+            }
 
-            peer = new Peer(hostPeerId, { debug: 1 });
+            peer = new Peer(hostPeerId, PEER_CONFIG);
 
             peer.on('open', (id) => {
                 console.log('Host criado PeerID:', id);
@@ -1067,34 +1109,38 @@
                 if (err.type === 'unavailable-id') {
                     initHostMode();
                 } else {
-                    showToast('Erro WebRTC: ' + err.type, true);
+                    showToast('Aviso de Conexão: ' + err.type, true);
                 }
             });
         }
 
         function handlePlayerMessage(conn, data) {
-            if (data.type === 'JOIN') {
-                playersMap[conn.peer] = {
-                    id: conn.peer,
-                    name: data.name || 'Aluno',
-                    avatar: data.avatar || '🦊',
-                    score: 0,
-                    currentAnswer: null,
-                    answerTime: 0,
-                    conn: conn
-                };
-                updateHostLobbyUI();
-                playSound('click');
-                conn.send({ type: 'JOIN_ACK', success: true });
-            } else if (data.type === 'SUBMIT_ANSWER') {
-                const player = playersMap[conn.peer];
-                if (player && player.currentAnswer === null) {
-                    player.currentAnswer = data.optionIndex;
-                    player.answerTime = data.timeRemaining;
-                    updateAnswersCountUI();
-                    conn.send({ type: 'ANSWER_RECEIVED' });
-                    checkAllPlayersAnswered();
+            try {
+                if (data.type === 'JOIN') {
+                    playersMap[conn.peer] = {
+                        id: conn.peer,
+                        name: data.name || 'Aluno',
+                        avatar: data.avatar || '🦊',
+                        score: 0,
+                        currentAnswer: null,
+                        answerTime: 0,
+                        conn: conn
+                    };
+                    updateHostLobbyUI();
+                    playSound('click');
+                    conn.send({ type: 'JOIN_ACK', success: true });
+                } else if (data.type === 'SUBMIT_ANSWER') {
+                    const player = playersMap[conn.peer];
+                    if (player && player.currentAnswer === null) {
+                        player.currentAnswer = data.optionIndex;
+                        player.answerTime = data.timeRemaining;
+                        updateAnswersCountUI();
+                        conn.send({ type: 'ANSWER_RECEIVED' });
+                        checkAllPlayersAnswered();
+                    }
                 }
+            } catch (e) {
+                console.error("Error handling message:", e);
             }
         }
 
@@ -1133,7 +1179,9 @@
         function broadcastToPlayers(payload) {
             Object.values(playersMap).forEach(p => {
                 if (p.conn && p.conn.open) {
-                    p.conn.send(payload);
+                    try {
+                        p.conn.send(payload);
+                    } catch (e) {}
                 }
             });
         }
@@ -1237,13 +1285,15 @@
                 }
 
                 if (p.conn && p.conn.open) {
-                    p.conn.send({
-                        type: 'ROUND_RESULT',
-                        isCorrect: isCorrect,
-                        pointsGained: pointsGained,
-                        totalScore: p.score,
-                        correctOptionIndex: correctOpt
-                    });
+                    try {
+                        p.conn.send({
+                            type: 'ROUND_RESULT',
+                            isCorrect: isCorrect,
+                            pointsGained: pointsGained,
+                            totalScore: p.score,
+                            correctOptionIndex: correctOpt
+                        });
+                    } catch (e) {}
                 }
             });
 
@@ -1309,7 +1359,9 @@
             showScreen('screen-host-podium');
 
             if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                try {
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                } catch (e) {}
             }
 
             const sorted = Object.values(playersMap).sort((a, b) => b.score - a.score);
@@ -1346,8 +1398,8 @@
 
         /* ================= MODE 2: PLAYER MOBILE (WEBRTC) ================= */
         function showPlayerJoinScreen() {
+            initAudioOnUserGesture();
             playSound('click');
-            // Auto check URL parameter for room code
             const urlParams = new URLSearchParams(window.location.search);
             const codeParam = urlParams.get('code');
             if (codeParam) {
@@ -1357,6 +1409,7 @@
         }
 
         function connectAsPlayer() {
+            initAudioOnUserGesture();
             playSound('click');
             const codeInput = document.getElementById('input-room-code').value.trim().toUpperCase();
             const nameInput = document.getElementById('input-player-name').value.trim();
@@ -1373,57 +1426,83 @@
             myPlayerName = nameInput;
             const targetHostPeerId = `show-gestao-room-${codeInput}`;
 
-            peer = new Peer();
-            showToast('Conectando ao Host...');
+            showToast('Conectando à sala...');
 
-            peer.on('open', (id) => {
-                hostConn = peer.connect(targetHostPeerId);
-                hostConn.on('open', () => {
-                    hostConn.send({
-                        type: 'JOIN',
-                        name: myPlayerName,
-                        avatar: myPlayerAvatar
+            try {
+                peer = new Peer(PEER_CONFIG);
+
+                peer.on('open', (id) => {
+                    hostConn = peer.connect(targetHostPeerId, { reliable: true });
+
+                    hostConn.on('open', () => {
+                        hostConn.send({
+                            type: 'JOIN',
+                            name: myPlayerName,
+                            avatar: myPlayerAvatar
+                        });
+                    });
+
+                    hostConn.on('data', (data) => handleHostMessage(data));
+
+                    hostConn.on('close', () => {
+                        showToast('Conexão encerrada pelo Host.', true);
+                        showScreen('screen-role');
+                    });
+
+                    hostConn.on('error', (err) => {
+                        showToast('Erro de conexão com o Host.', true);
                     });
                 });
 
-                hostConn.on('data', (data) => handleHostMessage(data));
-                hostConn.on('close', () => {
-                    showToast('Conexão encerrada pelo Host.', true);
-                    showScreen('screen-role');
+                peer.on('error', (err) => {
+                    showToast('Sala não encontrada ou inacessível. Verifique o código!', true);
                 });
-            });
+            } catch (e) {
+                showToast('Erro ao inicializar conexão celular.', true);
+            }
+        }
 
-            peer.on('error', (err) => {
-                showToast('Sala não encontrada. Verifique o código!', true);
-            });
+        function confirmPlayerReadyGesture() {
+            initAudioOnUserGesture();
+            playSound('click');
+            document.getElementById('player-lobby-status').innerText = 'Pronto! Aguardando o Host iniciar as perguntas...';
+            document.getElementById('btn-player-ready').classList.add('opacity-50', 'pointer-events-none');
+            document.getElementById('btn-player-ready').innerText = 'PRONTO ✓';
         }
 
         function handleHostMessage(data) {
-            if (data.type === 'JOIN_ACK') {
-                document.getElementById('player-avatar-display').innerText = myPlayerAvatar;
-                document.getElementById('player-welcome-name').innerText = `Olá, ${myPlayerName}!`;
-                showScreen('screen-player-lobby');
-            } else if (data.type === 'NEW_QUESTION') {
-                document.getElementById('player-q-num').innerText = `Pergunta ${data.questionNumber}/${data.totalQuestions}`;
-                document.getElementById('player-timer-badge').innerText = `${data.timeLimit}s`;
-                showScreen('screen-player-question');
-            } else if (data.type === 'ANSWER_RECEIVED') {
-                showScreen('screen-player-answered');
-            } else if (data.type === 'ROUND_RESULT') {
-                displayPlayerFeedback(data);
-            } else if (data.type === 'GAME_OVER') {
-                showToast('Fim de jogo! Veja o resultado final no projetor.');
+            try {
+                if (data.type === 'JOIN_ACK') {
+                    document.getElementById('player-avatar-display').innerText = myPlayerAvatar;
+                    document.getElementById('player-welcome-name').innerText = `Olá, ${myPlayerName}!`;
+                    showScreen('screen-player-lobby');
+                } else if (data.type === 'NEW_QUESTION') {
+                    document.getElementById('player-q-num').innerText = `Pergunta ${data.questionNumber}/${data.totalQuestions}`;
+                    document.getElementById('player-timer-badge').innerText = `${data.timeLimit}s`;
+                    showScreen('screen-player-question');
+                } else if (data.type === 'ANSWER_RECEIVED') {
+                    showScreen('screen-player-answered');
+                } else if (data.type === 'ROUND_RESULT') {
+                    displayPlayerFeedback(data);
+                } else if (data.type === 'GAME_OVER') {
+                    showToast('Fim de jogo! Veja o pódio final no projetor.');
+                }
+            } catch (e) {
+                console.error("Error processing host message:", e);
             }
         }
 
         function submitPlayerAnswer(optionIndex) {
+            initAudioOnUserGesture();
             playSound('click');
             if (hostConn && hostConn.open) {
-                hostConn.send({
-                    type: 'SUBMIT_ANSWER',
-                    optionIndex: optionIndex,
-                    timeRemaining: timeRemaining
-                });
+                try {
+                    hostConn.send({
+                        type: 'SUBMIT_ANSWER',
+                        optionIndex: optionIndex,
+                        timeRemaining: timeRemaining
+                    });
+                } catch (e) {}
             }
             showScreen('screen-player-answered');
         }
@@ -1459,6 +1538,7 @@
 
         /* ================= MODE 3: MESA REDONDA / REDE BLOQUEADA SENAI ================= */
         function initLocalClassroomMode() {
+            initAudioOnUserGesture();
             playSound('click');
             localTeams = ['Equipe Alfa', 'Equipe Beta', 'Equipe Gama'];
             localScores = { 'Equipe Alfa': 0, 'Equipe Beta': 0, 'Equipe Gama': 0 };
@@ -1517,7 +1597,6 @@
 
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`local-opt-text-${i}`).innerText = q.options[i];
-                // Reset styling
                 const el = document.getElementById(`local-opt-${i}`);
                 el.style.opacity = '1';
                 el.classList.remove('ring-4', 'ring-amber-400');
@@ -1576,14 +1655,15 @@
             if (currentQuestionIdx < QUIZ_QUESTIONS.length) {
                 loadLocalQuestion();
             } else {
-                alert('Fim das perguntas! Parabéns a todas as equipes.');
-                location.reload();
+                showToast('Fim das perguntas! Parabéns a todas as equipes.');
+                setTimeout(() => location.reload(), 2000);
             }
         }
 
 
         /* ================= MODE 4: SOLO GAME (SHOW DO MILHÃO) ================= */
         function startSoloGame() {
+            initAudioOnUserGesture();
             playSound('click');
             soloQuestionIdx = 0;
             soloSkips = 3;
@@ -1624,7 +1704,6 @@
                 btn.style.opacity = '1';
             }
 
-            // Update Lifeline Buttons State
             document.getElementById('btn-life-univ').disabled = lifelineUnivUsed;
             document.getElementById('btn-life-cartas').disabled = lifelineCartasUsed;
             document.getElementById('btn-life-pular').disabled = (soloSkips <= 0);
@@ -1634,6 +1713,7 @@
         }
 
         function submitSoloAnswer(optionIndex) {
+            initAudioOnUserGesture();
             const q = QUIZ_QUESTIONS[soloQuestionIdx];
             if (optionIndex === q.answer) {
                 playSound('correct');
@@ -1643,23 +1723,23 @@
                     setTimeout(loadSoloQuestion, 1200);
                 } else {
                     playSound('fanfare');
-                    alert('PARABÉNS! VOCÊ ACERTOU TODAS AS PERGUNTAS E CONQUISTOU 1 MILHÃO DE PONTOS!');
-                    location.reload();
+                    showToast('PARABÉNS! VOCÊ ACERTOU TODAS AS PERGUNTAS E GANHOU 1 MILHÃO!');
+                    setTimeout(() => location.reload(), 4000);
                 }
             } else {
                 playSound('wrong');
-                alert(`Que pena, você errou! A resposta correta era: ${q.options[q.answer]}`);
-                location.reload();
+                showToast(`Resposta Errada! A resposta correta era: ${q.options[q.answer]}`, true);
+                setTimeout(() => location.reload(), 3000);
             }
         }
 
         function useLifelineUniversitarios() {
             if (lifelineUnivUsed) return;
+            initAudioOnUserGesture();
             playSound('click');
             lifelineUnivUsed = true;
             const q = QUIZ_QUESTIONS[soloQuestionIdx];
 
-            // Generate realistic audience vote with high probability on correct answer
             const votes = [10, 10, 10, 10];
             votes[q.answer] = 70;
 
@@ -1679,13 +1759,13 @@
 
         function useLifelineCartas() {
             if (lifelineCartasUsed) return;
+            initAudioOnUserGesture();
             playSound('click');
             lifelineCartasUsed = true;
             const q = QUIZ_QUESTIONS[soloQuestionIdx];
 
-            // Randomly eliminate 1, 2 or 3 wrong options
             const wrongOpts = [0, 1, 2, 3].filter(idx => idx !== q.answer);
-            const numToRemove = Math.floor(Math.random() * 2) + 1; // 1 or 2 options
+            const numToRemove = Math.floor(Math.random() * 2) + 1;
             const toRemove = wrongOpts.slice(0, numToRemove);
 
             toRemove.forEach(idx => {
@@ -1700,6 +1780,7 @@
 
         function useLifelinePular() {
             if (soloSkips <= 0) return;
+            initAudioOnUserGesture();
             playSound('click');
             soloSkips--;
             showToast('Pergunta pulada com sucesso!');
@@ -1708,10 +1789,11 @@
         }
 
         function stopSoloGame() {
+            initAudioOnUserGesture();
             playSound('click');
             const currentPrize = soloQuestionIdx > 0 ? PRIZE_VALUES[soloQuestionIdx - 1] : 'R$ 0';
-            alert(`Você decidiu parar! Seu prêmio final foi: ${currentPrize}`);
-            location.reload();
+            showToast(`Você parou! Seu prêmio final foi: ${currentPrize}`);
+            setTimeout(() => location.reload(), 3000);
         }
     </script>
 </body>
