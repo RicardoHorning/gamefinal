@@ -87,7 +87,7 @@
                             <i class="fas fa-tv"></i>
                         </div>
                         <h3 class="font-bold text-base text-white">Criar Sala (Host)</h3>
-                        <p class="text-xs text-purple-200/80 mt-1">Exiba as perguntas no projetor da sala e conecte os alunos pelo celular.</p>
+                        <p class="text-xs text-purple-200/80 mt-1">Exiba as perguntas no projetor da sala com QR Code e conecte a turma.</p>
                     </div>
                     <span class="text-xs font-bold text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                         Iniciar Sala <i class="fas fa-arrow-right"></i>
@@ -101,7 +101,7 @@
                             <i class="fas fa-mobile-alt"></i>
                         </div>
                         <h3 class="font-bold text-base text-white">Entrar pelo Celular</h3>
-                        <p class="text-xs text-blue-200/80 mt-1">Conecte-se com o código de 4 letras projetado na tela da sala.</p>
+                        <p class="text-xs text-blue-200/80 mt-1">Conecte-se escaneando o QR Code ou digitando o código de 4 letras.</p>
                     </div>
                     <span class="text-xs font-bold text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                         Conectar <i class="fas fa-arrow-right"></i>
@@ -138,25 +138,29 @@
             </div>
             
             <div class="pt-2 text-xs text-gray-500">
-                Conexão via MQTT WebSocket (Porta 443) • Compatível com rede SENAI • Cronômetro de 30s ajustado
+                Conexão via MQTT WebSocket (Porta 443) • QR Code Inteligente com Fallback • Cronômetro 30s
             </div>
         </section>
 
-        <!-- 2. TELA LOBBY HOST (AGUARDANDO ALUNOS) -->
+        <!-- 2. TELA LOBBY HOST (AGUARDANDO ALUNOS COM QR CODE DESTAQUE) -->
         <section id="screen-host-lobby" class="hidden w-full max-w-4xl glass-panel rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
-            <div class="flex flex-col md:flex-row gap-6 items-center bg-gray-900/60 p-6 rounded-xl border border-gray-700/50">
+            <div class="flex flex-col md:flex-row gap-6 items-center bg-gray-900/80 p-6 rounded-xl border border-amber-500/40 shadow-xl">
                 <div class="flex-grow text-center md:text-left space-y-2">
                     <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Código da sala para os alunos entrarem:</span>
                     <div id="host-code-display" class="text-5xl sm:text-7xl font-black text-amber-400 tracking-widest font-mono">
                         ----
                     </div>
                     <p class="text-sm text-gray-300">
-                        Abra o jogo no celular dos alunos, clique em <strong>"Entrar pelo Celular"</strong> e digite o código acima!
+                        Abra a câmera do celular para escanear o QR Code ao lado ou acesse o site e digite o código acima!
                     </p>
                 </div>
-                <div class="bg-white p-3 rounded-xl flex flex-col items-center shadow-lg shrink-0">
-                    <div id="qrcode" class="w-36 h-36"></div>
-                    <span class="text-[10px] text-gray-800 font-bold mt-2 uppercase tracking-wider">Escanear para entrar</span>
+
+                <!-- QR CODE EM DESTAQUE COM RÓTULO -->
+                <div class="bg-white p-4 rounded-2xl flex flex-col items-center shadow-2xl shrink-0 border-4 border-amber-400">
+                    <div id="qrcode" class="w-40 h-40 flex items-center justify-center"></div>
+                    <span class="text-xs text-gray-900 font-black mt-2 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fas fa-qrcode text-amber-600"></i> ESCANEAR QR CODE
+                    </span>
                 </div>
             </div>
 
@@ -172,7 +176,7 @@
                 
                 <div id="host-player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-56 overflow-y-auto p-2 bg-gray-950/40 rounded-xl border border-gray-800/60">
                     <div id="empty-lobby-msg" class="col-span-full py-8 text-center text-gray-500 text-sm">
-                        Aguardando os alunos se conectarem...
+                        Aguardando os alunos se conectarem pelo QR Code...
                     </div>
                 </div>
             </div>
@@ -186,7 +190,7 @@
         <section id="screen-join" class="hidden w-full max-w-md glass-panel rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
             <div class="text-center space-y-2">
                 <h2 class="text-2xl font-bold text-white">Entrar na Sala</h2>
-                <p class="text-xs text-gray-300">Digite o código de 4 letras exibido na tela principal do professor.</p>
+                <p class="text-xs text-gray-300">Digite o código de 4 letras exibido no projetor.</p>
             </div>
 
             <div class="space-y-4">
@@ -223,7 +227,7 @@
             </div>
         </section>
 
-        <!-- 4. TELA JOGADOR CONECTADO (ESPERANDO PERGUNTA NO CELULAR) -->
+        <!-- 4. TELA JOGADOR CONECTADO -->
         <section id="screen-player-wait" class="hidden w-full max-w-md glass-panel rounded-2xl p-8 text-center space-y-6 shadow-2xl">
             <div class="w-20 h-20 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center text-4xl text-blue-400 animate-pulse">
                 <i class="fas fa-wifi"></i>
@@ -238,7 +242,7 @@
             </div>
         </section>
 
-        <!-- 5. CONTROLE DO JOGADOR NO CELULAR (4 BOTÕES ESTILO KAHOOT) -->
+        <!-- 5. CONTROLE DO JOGADOR NO CELULAR -->
         <section id="screen-player-gameplay" class="hidden w-full max-w-md h-full flex flex-col justify-between p-2 space-y-3">
             <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 flex justify-between items-center text-xs">
                 <span id="player-hud-name" class="font-bold text-amber-400">Jogador</span>
@@ -273,7 +277,7 @@
             </div>
         </section>
 
-        <!-- 6. TELA PRINCIPAL DO JOGO / PROJETOR (HOST, MESA REDONDA OU SOLO) -->
+        <!-- 6. TELA PRINCIPAL DO JOGO / PROJETOR -->
         <section id="screen-host-gameplay" class="hidden w-full max-w-5xl glass-panel rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
             <!-- HUD DA PERGUNTA -->
             <div class="flex justify-between items-center border-b border-gray-800 pb-4">
@@ -607,7 +611,7 @@
         let players = []; // { id, name, avatar, score }
         let currentQuestionIdx = 0;
         let timerInterval = null;
-        let timerSeconds = 30; // TEMPO DE 30 SEGUNDOS APLICADO
+        let timerSeconds = 30; // TEMPO DE 30 SEGUNDOS
         let answersReceived = {}; // playerId -> choiceIndex
         let soundEnabled = true;
         let myPlayerId = 'P_' + Math.random().toString(36).substr(2, 6);
@@ -721,7 +725,7 @@
         }
 
         /* ==========================================================================
-           5. MODALIDADE 1: HOST MULTIPLAYER (MQTT WEBSOCKETS)
+           5. MODALIDADE 1: HOST MULTIPLAYER COM GERADOR DE QR CODE RESILIENTE
            ========================================================================== */
         function initHost() {
             mode = 'HOST';
@@ -732,21 +736,42 @@
 
             showScreen('screen-host-lobby');
 
-            // Gerar QR Code
+            // Gerar QR Code com Fallback Automático caso CDN esteja bloqueado no SENAI
             const joinUrl = window.location.href.split('?')[0] + '?room=' + roomCode;
-            document.getElementById('qrcode').innerHTML = '';
-            new QRCode(document.getElementById('qrcode'), {
-                text: joinUrl,
-                width: 140,
-                height: 140
-            });
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+
+            let rendered = false;
+            if (typeof QRCode === 'function') {
+                try {
+                    new QRCode(qrcodeContainer, {
+                        text: joinUrl,
+                        width: 150,
+                        height: 150
+                    });
+                    rendered = true;
+                } catch(e) {
+                    console.log("Fallback QR Code disparado...");
+                }
+            }
+
+            if (!rendered) {
+                // Fallback de imagem de alta velocidade para QR Code
+                const qrImg = document.createElement('img');
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(joinUrl)}`;
+                qrImg.alt = "QR Code da Sala";
+                qrImg.className = "w-36 h-36 rounded shadow border border-gray-300";
+                qrImg.onerror = function() {
+                    this.src = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(joinUrl)}`;
+                };
+                qrcodeContainer.appendChild(qrImg);
+            }
 
             connectMQTT(roomCode, true);
         }
 
         function connectMQTT(room, isHost) {
             const clientId = (isHost ? 'HOST_' : 'PLAYER_') + Math.random().toString(36).substring(2, 8);
-            // HiveMQ Public WebSocket Broker na porta 8884 (SSL/TLS segura)
             mqttClient = new Paho.MQTT.Client('broker.hivemq.com', 8884, '/mqtt', clientId);
 
             mqttClient.onConnectionLost = (responseObject) => {
@@ -775,7 +800,6 @@
                     mqttClient.subscribe(topic);
 
                     if (!isHost) {
-                        // Envia solicitação de entrada
                         const joinMsg = new Paho.MQTT.Message(JSON.stringify({
                             type: 'JOIN',
                             id: myPlayerId,
@@ -838,7 +862,7 @@
             count.innerText = `${players.length} Entraram`;
 
             if (players.length === 0) {
-                list.innerHTML = `<div id="empty-lobby-msg" class="col-span-full py-8 text-center text-gray-500 text-sm">Aguardando os alunos se conectarem...</div>`;
+                list.innerHTML = `<div id="empty-lobby-msg" class="col-span-full py-8 text-center text-gray-500 text-sm">Aguardando os alunos se conectarem pelo QR Code...</div>`;
                 return;
             }
 
@@ -914,7 +938,7 @@
         }
 
         /* ==========================================================================
-           7. MODALIDADE 3: MESA REDONDA & MODALIDADE 4: SOLO (COM 30s)
+           7. MODALIDADE 3: MESA REDONDA & MODALIDADE 4: SOLO
            ========================================================================== */
         function initLocalMode() {
             mode = 'LOCAL';
@@ -953,7 +977,6 @@
             currentQuestionIdx = idx;
             const q = QUESTIONS[idx];
 
-            // Atualiza UI
             document.getElementById('question-badge').innerText = `${q.uc} • Questão ${idx + 1}/${QUESTIONS.length}`;
             document.getElementById('question-uc-title').innerText = q.ucTitle;
             document.getElementById('question-text').innerText = q.question;
@@ -965,7 +988,7 @@
             updateAnswersCounterUI();
             showScreen('screen-host-gameplay');
 
-            // CRONÔMETRO CONFIGURADO PARA 30 SEGUNDOS
+            // CRONÔMETRO DE 30 SEGUNDOS
             clearInterval(timerInterval);
             timerSeconds = 30;
             const timerDisplay = document.getElementById('timer-display');
@@ -1038,11 +1061,9 @@
                 }
             }
 
-            // Exibir Resultado
             document.getElementById('result-correct-answer-text').innerText = `Resposta Correta: ${q.options[q.answer]}`;
             document.getElementById('result-explanation').innerText = q.explanation;
 
-            // Ranking Parcial
             const sorted = [...players].sort((a, b) => b.score - a.score);
             const lb = document.getElementById('leaderboard-partial');
             
@@ -1067,7 +1088,7 @@
 
         /* ==========================================================================
            9. TELA FINAL DE PÓDIO & CONFETES
-           ========================================================================== */
+           ========================================================================= */
         function showPodium() {
             if (mode === 'HOST') publishMQTT({ type: 'GAME_OVER' });
 
@@ -1094,7 +1115,7 @@
             } catch(e) {}
         }
 
-        // Auto-preencher código via URL (?room=XXXX)
+        // Auto-preencher código via URL (?room=XXXX) ao escanear o QR Code
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const roomParam = params.get('room');
