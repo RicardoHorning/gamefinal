@@ -7,12 +7,12 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- PeerJS for WebRTC Multiplayer -->
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <!-- Paho MQTT WebSocket Client (Bypasses Firewall / P2P Restrictions) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- QRCode.js -->
@@ -31,7 +31,6 @@
                         quizYellow: '#d89e00',
                         quizGreen: '#26890c',
                         gold: '#fbbf24',
-                        goldDark: '#b45309',
                         darkBg: '#0f0c20',
                         panelBg: '#1e1b4b',
                     },
@@ -76,11 +75,11 @@
             transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
         }
         .option-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
-        .timer-ring {
-            transition: stroke-dashoffset 1s linear;
+        .timer-progress-bar {
+            transition: width 1s linear, background-color 0.5s ease;
         }
 
         .chart-bar {
@@ -121,20 +120,20 @@
                     <i class="fa-solid fa-award text-5xl text-amber-400 gold-text-glow"></i>
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight gold-text-glow">O SHOW DA GESTÃO!</h1>
-                <p class="text-purple-200 text-sm max-w-md mx-auto">
-                    Teste seus conhecimentos nas 12 Unidades Curriculares do curso de Assistente Administrativo do SENAI!
+                <p class="text-purple-200 text-xs sm:text-sm max-w-md mx-auto">
+                    Desafio interativo cobrindo as 12 Unidades Curriculares da matriz de Assistente Administrativo SENAI!
                 </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <!-- Mode 1: Host WebRTC -->
+                <!-- Mode 1: Host MQTT -->
                 <button onclick="initHostMode()" class="bg-gradient-to-br from-purple-700 to-indigo-800 hover:from-purple-600 hover:to-indigo-700 text-white p-4 rounded-2xl shadow-xl transition flex flex-col items-center justify-center text-center border border-purple-400/40 space-y-2">
                     <i class="fa-solid fa-desktop text-3xl text-amber-300"></i>
                     <span class="font-bold text-base">Criar Sala (Projetor/Host)</span>
-                    <span class="text-xs text-purple-200 opacity-80">Multiplayer WebRTC para a Sala</span>
+                    <span class="text-xs text-purple-200 opacity-80">Multiplayer com Celulares via MQTT</span>
                 </button>
 
-                <!-- Mode 2: Player Mobile WebRTC -->
+                <!-- Mode 2: Player Mobile MQTT -->
                 <button onclick="showPlayerJoinScreen()" class="bg-gradient-to-br from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 p-4 rounded-2xl shadow-xl transition flex flex-col items-center justify-center text-center font-bold space-y-2 border border-yellow-300">
                     <i class="fa-solid fa-mobile-screen-button text-3xl"></i>
                     <span class="font-black text-base">Entrar pelo Celular</span>
@@ -143,30 +142,30 @@
 
                 <!-- Mode 3: Local Classroom / Blocked Network -->
                 <button onclick="initLocalClassroomMode()" class="bg-gradient-to-br from-emerald-700 to-teal-800 hover:from-emerald-600 hover:to-teal-700 text-white p-4 rounded-2xl shadow-xl transition flex flex-col items-center justify-center text-center border border-emerald-400/40 space-y-2">
-                    <i class="fa-solid fa-shield-halved text-3xl text-emerald-300"></i>
+                    <i class="fa-solid fa-users text-3xl text-emerald-300"></i>
                     <span class="font-bold text-base">Mesa Redonda (Projetor)</span>
-                    <span class="text-xs text-emerald-200 opacity-80">Sem Internet / Rede SENAI Bloqueada</span>
+                    <span class="text-xs text-emerald-200 opacity-80">Jogo em Equipes sem Celular</span>
                 </button>
 
                 <!-- Mode 4: Solo Practice -->
                 <button onclick="startSoloGame()" class="bg-gradient-to-br from-blue-700 to-cyan-800 hover:from-blue-600 hover:to-cyan-700 text-white p-4 rounded-2xl shadow-xl transition flex flex-col items-center justify-center text-center border border-blue-400/40 space-y-2">
                     <i class="fa-solid fa-user-astronaut text-3xl text-cyan-300"></i>
                     <span class="font-bold text-base">Modo Solo (Show do Milhão)</span>
-                    <span class="text-xs text-cyan-200 opacity-80">Com Universitários, Cartas e Pulos</span>
+                    <span class="text-xs text-cyan-200 opacity-80">Com Cronômetro 20s, 3 Vidas & Ajudas</span>
                 </button>
             </div>
         </section>
 
-        <!-- ================= SCREEN 2: HOST LOBBY (WEBRTC MULTIPLAYER) ================= -->
+        <!-- ================= SCREEN 2: HOST LOBBY (MQTT MULTIPLAYER) ================= -->
         <section id="screen-host-lobby" class="hidden w-full max-w-4xl glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center border-b border-amber-400/20 pb-6">
                 <!-- Room Info -->
                 <div class="md:col-span-2 space-y-2">
                     <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">Código da Sala para os Alunos Entrarem:</span>
                     <div id="host-room-code-display" class="font-mono text-5xl sm:text-6xl font-black text-amber-400 tracking-widest gold-text-glow">
-                        <i class="fa-solid fa-spinner animate-spin text-3xl"></i>
+                        ----
                     </div>
-                    <p class="text-xs text-purple-200">Abra o jogo nos celulares, clique em <b>"Entrar pelo Celular"</b> e digite o código acima!</p>
+                    <p class="text-xs text-purple-200">Alunos: abram o jogo, cliquem em <b>"Entrar pelo Celular"</b> e digitem o código acima!</p>
                 </div>
                 <!-- QR Code Box -->
                 <div class="flex flex-col items-center justify-center bg-white p-3 rounded-2xl border-2 border-amber-400 shadow-lg">
@@ -197,21 +196,24 @@
         <!-- ================= SCREEN 3: HOST QUESTION (PROJECTOR VIEW) ================= -->
         <section id="screen-host-question" class="hidden w-full max-w-5xl space-y-6">
             <!-- Header bar -->
-            <div class="glass-panel p-4 rounded-2xl flex justify-between items-center gold-border">
-                <div class="flex items-center space-x-3">
-                    <span id="question-progress" class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs sm:text-sm">UC 1/12 • Pergunta 1/25</span>
-                    <span id="answers-counter" class="text-xs font-semibold text-purple-200 bg-purple-900/80 px-3 py-1.5 rounded-xl border border-purple-400/30">
-                        <i class="fa-solid fa-reply mr-1 text-amber-400"></i><span id="answers-count-num">0</span>/<span id="answers-total-num">0</span> responderam
-                    </span>
+            <div class="glass-panel p-4 rounded-2xl space-y-3 gold-border">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <span id="question-progress" class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs sm:text-sm">UC 1/12 • Pergunta 1/25</span>
+                        <span id="answers-counter" class="text-xs font-semibold text-purple-200 bg-purple-900/80 px-3 py-1.5 rounded-xl border border-purple-400/30">
+                            <i class="fa-solid fa-reply mr-1 text-amber-400"></i><span id="answers-count-num">0</span>/<span id="answers-total-num">0</span> responderam
+                        </span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-stopwatch text-amber-400 text-lg"></i>
+                        <span id="timer-text" class="font-mono font-black text-2xl text-amber-300 gold-text-glow">20s</span>
+                    </div>
                 </div>
 
-                <!-- Timer -->
-                <div class="relative w-14 h-14 flex items-center justify-center">
-                    <svg class="w-full h-full transform -rotate-90">
-                        <circle cx="28" cy="28" r="22" stroke="currentColor" stroke-width="5" class="text-purple-950" fill="transparent"/>
-                        <circle id="timer-ring" cx="28" cy="28" r="22" stroke="currentColor" stroke-width="5" class="text-amber-400 timer-ring" fill="transparent" stroke-dasharray="138" stroke-dashoffset="0"/>
-                    </svg>
-                    <span id="timer-text" class="absolute font-black text-xl text-amber-300 gold-text-glow">20</span>
+                <!-- Timer Progress Bar -->
+                <div class="w-full bg-slate-950/80 rounded-full h-3 overflow-hidden border border-amber-400/30">
+                    <div id="host-timer-bar" class="bg-amber-400 h-full w-full timer-progress-bar"></div>
                 </div>
             </div>
 
@@ -349,7 +351,7 @@
             <div class="animate-bounce text-6xl" id="player-avatar-display">🦊</div>
             <div>
                 <h2 class="text-2xl font-bold text-amber-300" id="player-welcome-name">Olá, Jogador!</h2>
-                <p class="text-emerald-400 font-semibold mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Você está conectado!</p>
+                <p class="text-emerald-400 font-semibold mt-1"><i class="fa-solid fa-circle-check mr-1"></i> Conectado via MQTT!</p>
             </div>
             
             <button id="btn-player-ready" onclick="confirmPlayerReadyGesture()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black py-3.5 rounded-xl text-base shadow-lg transition flex items-center justify-center space-x-2">
@@ -358,7 +360,7 @@
             </button>
 
             <div class="bg-purple-950/80 p-4 rounded-2xl border border-purple-500/30">
-                <p id="player-lobby-status" class="text-sm text-purple-200">Clique em "ESTOU PRONTO" acima e olhe para o projetor...</p>
+                <p id="player-lobby-status" class="text-sm text-purple-200">Clique em "ESTOU PRONTO" e olhe para a tela do projetor...</p>
             </div>
         </section>
 
@@ -394,7 +396,7 @@
         <section id="screen-player-answered" class="hidden w-full max-w-md glass-panel p-8 rounded-3xl text-center space-y-4">
             <div class="text-6xl animate-bounce">⏳</div>
             <h2 class="text-2xl font-bold text-amber-300">Resposta Computada!</h2>
-            <p class="text-sm text-purple-200">Aguardando o encerramento do tempo ou demais participantes...</p>
+            <p class="text-sm text-purple-200">Aguardando o encerramento do tempo no projetor...</p>
         </section>
 
         <!-- ================= SCREEN 10: PLAYER FEEDBACK ================= -->
@@ -417,8 +419,8 @@
             <!-- Header Local -->
             <div class="flex flex-col md:flex-row justify-between items-center border-b border-amber-400/20 pb-4 gap-4">
                 <div>
-                    <span class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Modo Rede Bloqueada SENAI</span>
-                    <h2 class="text-2xl font-black text-amber-300 mt-1">Mesa Redonda no Projetor</h2>
+                    <span class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Modo Mesa Redonda / Sem Celular</span>
+                    <h2 class="text-2xl font-black text-amber-300 mt-1">Jogo em Equipes no Projetor</h2>
                 </div>
                 <div class="flex items-center space-x-2">
                     <button onclick="addLocalTeam()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-sm transition">
@@ -438,20 +440,25 @@
                 </div>
             </div>
 
-            <!-- Active Local Question Area (Hidden until started) -->
+            <!-- Active Local Gameplay Area -->
             <div id="local-gameplay-area" class="hidden space-y-6">
                 <!-- Local Scoreboard Header -->
                 <div id="local-scoreboard-bar" class="flex flex-wrap gap-2 justify-center bg-slate-950/80 p-3 rounded-2xl border border-amber-400/30">
                     <!-- Dynamic team scores -->
                 </div>
 
+                <!-- Local Timer & Progress -->
+                <div class="w-full bg-slate-950/80 rounded-full h-3 overflow-hidden border border-amber-400/30">
+                    <div id="local-timer-bar" class="bg-amber-400 h-full w-full timer-progress-bar"></div>
+                </div>
+
                 <!-- Local Question Box -->
                 <div class="glass-panel p-6 sm:p-8 rounded-3xl text-center space-y-3 gold-border">
                     <div class="flex justify-between items-center">
                         <span id="local-q-progress" class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs">Pergunta 1/25</span>
-                        <span id="local-q-uc" class="text-xs font-bold text-amber-300">UC1 - COMUNICAÇÃO</span>
+                        <span id="local-timer-text" class="font-mono text-xl font-black text-amber-300">20s</span>
                     </div>
-                    <h2 id="local-question-text" class="text-xl sm:text-2xl font-extrabold text-white">Text</h2>
+                    <h2 id="local-question-text" class="text-xl sm:text-2xl font-extrabold text-white">Pergunta...</h2>
                 </div>
 
                 <!-- Options Grid for Display -->
@@ -472,7 +479,7 @@
 
                 <!-- Score Awarding Controller for Teacher/Host -->
                 <div class="bg-slate-950/80 p-4 rounded-2xl border border-purple-500/40 space-y-3 text-center">
-                    <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">Qual equipe acertou a resposta?</span>
+                    <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">Controle do Professor: Qual equipe pontuou?</span>
                     <div id="local-award-buttons" class="flex flex-wrap gap-2 justify-center">
                         <!-- Buttons per team -->
                     </div>
@@ -488,30 +495,48 @@
             </div>
         </section>
 
-        <!-- ================= SCREEN 12: MODO SOLO (SHOW DO MILHÃO CLASSIC) ================= -->
+        <!-- ================= SCREEN 12: MODO SOLO (SHOW DO MILHÃO COM CRONÔMETRO ATIVO) ================= -->
         <section id="screen-solo-game" class="hidden w-full max-w-5xl space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
                 <!-- Left: Question & Gameplay (3 Cols) -->
                 <div class="lg:col-span-3 space-y-4">
-                    <!-- Progress & Lifelines Header -->
-                    <div class="glass-panel p-4 rounded-2xl flex flex-wrap justify-between items-center gap-2 gold-border">
-                        <div class="flex items-center space-x-2">
-                            <span id="solo-q-progress" class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs">Pergunta 1/25</span>
-                            <span id="solo-uc-title" class="text-xs font-bold text-amber-300 hidden sm:inline">UC1 - Comunicação</span>
+                    <!-- Progress & Timer Header -->
+                    <div class="glass-panel p-4 rounded-2xl space-y-3 gold-border">
+                        <div class="flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex items-center space-x-2">
+                                <span id="solo-q-progress" class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs">Pergunta 1/25</span>
+                                <span id="solo-uc-title" class="text-xs font-bold text-amber-300 hidden sm:inline">UC1 - Comunicação</span>
+                                <div id="solo-lives-container" class="flex items-center space-x-1 text-red-500 text-sm ml-2">
+                                    <i class="fa-solid fa-heart"></i>
+                                    <i class="fa-solid fa-heart"></i>
+                                    <i class="fa-solid fa-heart"></i>
+                                </div>
+                            </div>
+
+                            <!-- Timer Display -->
+                            <div class="flex items-center space-x-2 bg-purple-950 px-3 py-1 rounded-xl border border-amber-400/40">
+                                <i class="fa-solid fa-stopwatch text-amber-400 text-sm"></i>
+                                <span id="solo-timer-text" class="font-mono text-xl font-black text-amber-300">20s</span>
+                            </div>
+
+                            <!-- Lifelines Buttons -->
+                            <div class="flex items-center space-x-2">
+                                <button id="btn-life-univ" onclick="useLifelineUniversitarios()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
+                                    <span>🎓 Universitários</span>
+                                </button>
+                                <button id="btn-life-cartas" onclick="useLifelineCartas()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
+                                    <span>🃏 Cartas</span>
+                                </button>
+                                <button id="btn-life-pular" onclick="useLifelinePular()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
+                                    <span>⏭️ Pular (<span id="solo-skips-count">3</span>)</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Lifelines Buttons -->
-                        <div class="flex items-center space-x-2">
-                            <button id="btn-life-univ" onclick="useLifelineUniversitarios()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
-                                <span>🎓 Universitários</span>
-                            </button>
-                            <button id="btn-life-cartas" onclick="useLifelineCartas()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
-                                <span>🃏 Cartas</span>
-                            </button>
-                            <button id="btn-life-pular" onclick="useLifelinePular()" class="bg-purple-800 hover:bg-purple-700 disabled:opacity-30 border border-amber-400/40 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 flex items-center space-x-1">
-                                <span>⏭️ Pular (<span id="solo-skips-count">3</span>)</span>
-                            </button>
+                        <!-- Timer Progress Bar -->
+                        <div class="w-full bg-slate-950/80 rounded-full h-3 overflow-hidden border border-amber-400/30">
+                            <div id="solo-timer-bar" class="bg-amber-400 h-full w-full timer-progress-bar"></div>
                         </div>
                     </div>
 
@@ -540,9 +565,9 @@
                         </button>
                     </div>
 
-                    <!-- Lifeline Feedback Display Modal/Area -->
-                    <div id="solo-lifeline-result" class="hidden glass-panel p-4 rounded-2xl text-center border border-amber-400">
-                        <!-- Dynamic lifeline info -->
+                    <!-- Lifeline / Explanation Modal Display -->
+                    <div id="solo-lifeline-result" class="hidden glass-panel p-4 rounded-2xl text-center border border-amber-400 space-y-2">
+                        <!-- Dynamic lifeline or explanation info -->
                     </div>
                 </div>
 
@@ -578,7 +603,7 @@
                 uc: "UC01 - Fundamentos da Comunicação",
                 question: "O que caracteriza o conceito de 'ruído' no processo de comunicação empresarial?",
                 options: [
-                    "A velocidade da conexão de internet",
+                    "A velocidade da conexão de internet corporativa",
                     "Qualquer interferência ou barreira que distorça a compreensão da mensagem",
                     "O tom de voz elevado em reuniões presenciais",
                     "O envio de mensagens com cópia oculta (Cco)"
@@ -860,36 +885,22 @@
             "R$ 850.000", "R$ 900.000", "R$ 950.000", "R$ 980.000", "1 MILHÃO DE PONTOS!"
         ];
 
-        /* --- STUN/ICE CONFIGURATION FOR STABLE NAT TRAVERSAL IN CELLULAR & WI-FI NETWORKS --- */
-        const PEER_CONFIG = {
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
-                    { urls: 'stun:stun4.l.google.com:19302' }
-                ]
-            },
-            debug: 1
-        };
-
         /* --- GLOBAL STATE VARIABLES --- */
         let soundEnabled = true;
         let audioCtx = null;
-        let audioUnlocked = false;
 
-        let peer = null;
+        let mqttClient = null;
         let isHost = false;
         let roomCode = '';
-        let playersMap = {}; // peerId -> { id, name, avatar, score, currentAnswer, answerTime, conn }
+        let playerId = '';
+        let playersMap = {}; // playerId -> { id, name, avatar, score, currentAnswer, answerTime }
+
         let currentQuestionIdx = 0;
         let questionTimer = null;
         let timeRemaining = 20;
         const QUESTION_TIME_LIMIT = 20;
 
         // Player Mobile State
-        let hostConn = null;
         let myPlayerName = '';
         let myPlayerAvatar = '🦊';
         let selectedAvatarIdx = 0;
@@ -900,11 +911,12 @@
 
         // Solo Mode State
         let soloQuestionIdx = 0;
+        let soloLives = 3;
         let soloSkips = 3;
         let lifelineUnivUsed = false;
         let lifelineCartasUsed = false;
 
-        /* --- AUDIO SYNTHESIS WITH MOBILE SAFEGUARDS --- */
+        /* --- AUDIO SYNTHESIS WITH AUDIO CONTEXT UNLOCK --- */
         function initAudioOnUserGesture() {
             try {
                 if (!audioCtx) {
@@ -913,9 +925,8 @@
                 if (audioCtx && audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
-                audioUnlocked = true;
             } catch (e) {
-                console.log("Audio unlock muted/deferred:", e);
+                console.log("Audio unlock deferred:", e);
             }
         }
 
@@ -938,7 +949,7 @@
 
                 if (type === 'tick') {
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(700, now);
+                    osc.frequency.setValueAtTime(750, now);
                     gain.gain.setValueAtTime(0.04, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
                     osc.start(now);
@@ -981,7 +992,7 @@
                     });
                 }
             } catch (e) {
-                // Ignore audio errors on non-supported platforms
+                // Ignore audio errors
             }
         }
 
@@ -1059,13 +1070,22 @@
         }
 
 
-        /* ================= MODE 1: WEBRTC HOST MULTIPLAYER ================= */
+        /* ================= MQTT OVER WEBSOCKETS LOGIC ================= */
+        // Broker HiveMQ WSS (Port 8884) - Works seamlessly over SENAI Firewalls & Cellular networks
+        const MQTT_BROKER = 'broker.hivemq.com';
+        const MQTT_PORT = 8884;
+
+        function getTopicPrefix() {
+            return `senaigestao/${roomCode}`;
+        }
+
+        /* --- HOST MQTT MODE --- */
         function initHostMode() {
             initAudioOnUserGesture();
             playSound('click');
             isHost = true;
             roomCode = generateShortCode(4);
-            const hostPeerId = `show-gestao-room-${roomCode}`;
+            playersMap = {};
 
             document.getElementById('room-code-badge').classList.remove('hidden');
             document.getElementById('display-room-code').innerText = roomCode;
@@ -1073,7 +1093,7 @@
 
             showScreen('screen-host-lobby');
 
-            // Render QR Code for Host
+            // Render QR Code
             const qrContainer = document.getElementById('qrcode-container');
             qrContainer.innerHTML = '';
             const playerUrl = `${window.location.origin}${window.location.pathname}?code=${roomCode}`;
@@ -1086,68 +1106,76 @@
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
-            } catch (e) {
-                console.log("QR Code render error:", e);
-            }
+            } catch (e) {}
 
-            peer = new Peer(hostPeerId, PEER_CONFIG);
+            const hostClientId = `host_${roomCode}_${Math.random().toString(16).substr(2, 6)}`;
+            mqttClient = new Paho.MQTT.Client(MQTT_BROKER, MQTT_PORT, hostClientId);
 
-            peer.on('open', (id) => {
-                console.log('Host criado PeerID:', id);
-            });
+            mqttClient.onConnectionLost = onHostConnectionLost;
+            mqttClient.onMessageArrived = onHostMessageArrived;
 
-            peer.on('connection', (conn) => {
-                conn.on('open', () => {
-                    conn.on('data', (data) => handlePlayerMessage(conn, data));
-                });
-                conn.on('close', () => removePlayer(conn.peer));
-                conn.on('error', () => removePlayer(conn.peer));
-            });
-
-            peer.on('error', (err) => {
-                console.error('Peer error:', err);
-                if (err.type === 'unavailable-id') {
-                    initHostMode();
-                } else {
-                    showToast('Aviso de Conexão: ' + err.type, true);
+            mqttClient.connect({
+                useSSL: true,
+                onSuccess: () => {
+                    console.log("Host MQTT Conectado!");
+                    const playerTopic = `${getTopicPrefix()}/players/+`;
+                    mqttClient.subscribe(playerTopic);
+                },
+                onFailure: (err) => {
+                    showToast("Erro de conexão MQTT. Tente novamente.", true);
                 }
             });
         }
 
-        function handlePlayerMessage(conn, data) {
+        function onHostConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("Host Conexão Perdida: " + responseObject.errorMessage);
+                showToast("Conexão oscilou. Reconectando...", true);
+                setTimeout(() => {
+                    if (mqttClient) mqttClient.connect({ useSSL: true });
+                }, 2000);
+            }
+        }
+
+        function onHostMessageArrived(message) {
             try {
+                const data = JSON.parse(message.payloadString);
+                const topic = message.destinationName;
+                const pid = topic.split('/').pop();
+
                 if (data.type === 'JOIN') {
-                    playersMap[conn.peer] = {
-                        id: conn.peer,
+                    playersMap[pid] = {
+                        id: pid,
                         name: data.name || 'Aluno',
                         avatar: data.avatar || '🦊',
                         score: 0,
                         currentAnswer: null,
-                        answerTime: 0,
-                        conn: conn
+                        answerTime: 0
                     };
                     updateHostLobbyUI();
                     playSound('click');
-                    conn.send({ type: 'JOIN_ACK', success: true });
+
+                    // Send ACK back
+                    publishMqtt(`${getTopicPrefix()}/host`, {
+                        type: 'JOIN_ACK',
+                        playerId: pid
+                    });
                 } else if (data.type === 'SUBMIT_ANSWER') {
-                    const player = playersMap[conn.peer];
-                    if (player && player.currentAnswer === null) {
-                        player.currentAnswer = data.optionIndex;
-                        player.answerTime = data.timeRemaining;
+                    if (playersMap[pid] && playersMap[pid].currentAnswer === null) {
+                        playersMap[pid].currentAnswer = data.optionIndex;
+                        playersMap[pid].answerTime = data.timeRemaining;
                         updateAnswersCountUI();
-                        conn.send({ type: 'ANSWER_RECEIVED' });
                         checkAllPlayersAnswered();
                     }
                 }
-            } catch (e) {
-                console.error("Error handling message:", e);
-            }
+            } catch (e) {}
         }
 
-        function removePlayer(peerId) {
-            if (playersMap[peerId]) {
-                delete playersMap[peerId];
-                updateHostLobbyUI();
+        function publishMqtt(topic, payload) {
+            if (mqttClient && mqttClient.isConnected()) {
+                const msg = new Paho.MQTT.Message(JSON.stringify(payload));
+                msg.destinationName = topic;
+                mqttClient.send(msg);
             }
         }
 
@@ -1155,11 +1183,11 @@
             const list = document.getElementById('host-players-list');
             const countNum = document.getElementById('count-num');
             const startBtn = document.getElementById('btn-start-game');
-            const playerKeys = Object.keys(playersMap);
+            const pKeys = Object.keys(playersMap);
 
-            countNum.innerText = playerKeys.length;
+            countNum.innerText = pKeys.length;
 
-            if (playerKeys.length === 0) {
+            if (pKeys.length === 0) {
                 list.innerHTML = `<p id="empty-players-msg" class="text-purple-300/60 italic text-sm w-full text-center py-10">Aguardando alunos conectarem pelos seus celulares...</p>`;
                 startBtn.disabled = true;
                 return;
@@ -1167,22 +1195,12 @@
 
             startBtn.disabled = false;
             list.innerHTML = '';
-            playerKeys.forEach(key => {
+            pKeys.forEach(key => {
                 const p = playersMap[key];
                 const badge = document.createElement('div');
                 badge.className = 'bg-purple-900/80 border border-amber-400/30 px-3.5 py-2 rounded-xl flex items-center space-x-2 shadow-md animate-bounce-short';
                 badge.innerHTML = `<span class="text-xl">${p.avatar}</span><span class="font-bold text-sm text-white">${p.name}</span>`;
                 list.appendChild(badge);
-            });
-        }
-
-        function broadcastToPlayers(payload) {
-            Object.values(playersMap).forEach(p => {
-                if (p.conn && p.conn.open) {
-                    try {
-                        p.conn.send(payload);
-                    } catch (e) {}
-                }
             });
         }
 
@@ -1212,7 +1230,8 @@
             updateAnswersCountUI();
             showScreen('screen-host-question');
 
-            broadcastToPlayers({
+            // Notify all players via MQTT
+            publishMqtt(`${getTopicPrefix()}/host`, {
                 type: 'NEW_QUESTION',
                 questionNumber: currentQuestionIdx + 1,
                 totalQuestions: QUIZ_QUESTIONS.length,
@@ -1220,27 +1239,19 @@
             });
 
             timeRemaining = QUESTION_TIME_LIMIT;
-            updateTimerRing();
+            updateTimerUI('host-timer-bar', 'timer-text', timeRemaining, QUESTION_TIME_LIMIT);
 
             clearInterval(questionTimer);
             questionTimer = setInterval(() => {
                 timeRemaining--;
-                updateTimerRing();
-                playSound('tick');
+                updateTimerUI('host-timer-bar', 'timer-text', timeRemaining, QUESTION_TIME_LIMIT);
+                if (timeRemaining <= 5 && timeRemaining > 0) playSound('tick');
 
                 if (timeRemaining <= 0) {
                     clearInterval(questionTimer);
                     endMultiplayerRound();
                 }
             }, 1000);
-        }
-
-        function updateTimerRing() {
-            const ring = document.getElementById('timer-ring');
-            const text = document.getElementById('timer-text');
-            text.innerText = timeRemaining;
-            const offset = 138 - (timeRemaining / QUESTION_TIME_LIMIT) * 138;
-            ring.style.strokeDashoffset = offset;
         }
 
         function updateAnswersCountUI() {
@@ -1255,7 +1266,7 @@
             const answered = Object.values(playersMap).filter(p => p.currentAnswer !== null).length;
             if (total > 0 && answered === total) {
                 clearInterval(questionTimer);
-                setTimeout(endMultiplayerRound, 500);
+                setTimeout(endMultiplayerRound, 400);
             }
         }
 
@@ -1264,7 +1275,6 @@
             const q = QUIZ_QUESTIONS[currentQuestionIdx];
             const correctOpt = q.answer;
 
-            // Answers Breakdown Count
             const counts = [0, 0, 0, 0];
             Object.values(playersMap).forEach(p => {
                 if (p.currentAnswer !== null) {
@@ -1272,7 +1282,7 @@
                 }
             });
 
-            // Update scores & send individual result to mobile
+            // Calculate scores & send round results via MQTT
             Object.values(playersMap).forEach(p => {
                 let pointsGained = 0;
                 let isCorrect = false;
@@ -1284,27 +1294,23 @@
                     p.score += pointsGained;
                 }
 
-                if (p.conn && p.conn.open) {
-                    try {
-                        p.conn.send({
-                            type: 'ROUND_RESULT',
-                            isCorrect: isCorrect,
-                            pointsGained: pointsGained,
-                            totalScore: p.score,
-                            correctOptionIndex: correctOpt
-                        });
-                    } catch (e) {}
-                }
+                publishMqtt(`${getTopicPrefix()}/host`, {
+                    type: 'ROUND_RESULT',
+                    targetPlayerId: p.id,
+                    isCorrect: isCorrect,
+                    pointsGained: pointsGained,
+                    totalScore: p.score,
+                    correctOptionIndex: correctOpt
+                });
             });
 
-            // Update Result UI
+            // Update Host Result UI
             const optionColors = ['bg-quizRed text-white', 'bg-quizBlue text-white', 'bg-quizYellow text-slate-950', 'bg-quizGreen text-white'];
             const optionSymbols = ['▲', '◆', '●', '■'];
             const correctBox = document.getElementById('correct-answer-box');
             correctBox.className = `inline-block px-6 py-3 rounded-2xl font-black text-lg sm:text-xl shadow-xl ${optionColors[correctOpt]}`;
             correctBox.innerText = `${optionSymbols[correctOpt]} ${q.options[correctOpt]}`;
 
-            // Render Chart
             const maxVal = Math.max(1, ...counts);
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`chart-count-${i}`).innerText = counts[i];
@@ -1376,7 +1382,7 @@
             if (p1) container.appendChild(createPodiumStep(p1, '1º', 'h-48 bg-amber-400 text-slate-950 border-amber-200 shadow-2xl ring-4 ring-amber-300/50', 'order-2 scale-105'));
             if (p3) container.appendChild(createPodiumStep(p3, '3º', 'h-28 bg-amber-700 text-white border-amber-600', 'order-3'));
 
-            broadcastToPlayers({ type: 'GAME_OVER' });
+            publishMqtt(`${getTopicPrefix()}/host`, { type: 'GAME_OVER' });
         }
 
         function createPodiumStep(player, rankText, styleClasses, orderClass) {
@@ -1396,7 +1402,7 @@
         }
 
 
-        /* ================= MODE 2: PLAYER MOBILE (WEBRTC) ================= */
+        /* --- PLAYER MOBILE MQTT MODE --- */
         function showPlayerJoinScreen() {
             initAudioOnUserGesture();
             playSound('click');
@@ -1423,56 +1429,58 @@
                 return;
             }
 
+            roomCode = codeInput;
             myPlayerName = nameInput;
-            const targetHostPeerId = `show-gestao-room-${codeInput}`;
+            playerId = `p_${Math.random().toString(16).substr(2, 6)}`;
 
-            showToast('Conectando à sala...');
+            showToast('Conectando à sala via MQTT...');
 
-            try {
-                peer = new Peer(PEER_CONFIG);
+            mqttClient = new Paho.MQTT.Client(MQTT_BROKER, MQTT_PORT, playerId);
+            mqttClient.onConnectionLost = onPlayerConnectionLost;
+            mqttClient.onMessageArrived = onPlayerMessageArrived;
 
-                peer.on('open', (id) => {
-                    hostConn = peer.connect(targetHostPeerId, { reliable: true });
+            mqttClient.connect({
+                useSSL: true,
+                onSuccess: () => {
+                    console.log("Jogador MQTT Conectado!");
+                    // Subscribe to host updates
+                    mqttClient.subscribe(`${getTopicPrefix()}/host`);
 
-                    hostConn.on('open', () => {
-                        hostConn.send({
-                            type: 'JOIN',
-                            name: myPlayerName,
-                            avatar: myPlayerAvatar
-                        });
+                    // Publish JOIN
+                    publishMqtt(`${getTopicPrefix()}/players/${playerId}`, {
+                        type: 'JOIN',
+                        name: myPlayerName,
+                        avatar: myPlayerAvatar
                     });
+                },
+                onFailure: (err) => {
+                    showToast('Não foi possível conectar. Verifique o código!', true);
+                }
+            });
+        }
 
-                    hostConn.on('data', (data) => handleHostMessage(data));
-
-                    hostConn.on('close', () => {
-                        showToast('Conexão encerrada pelo Host.', true);
-                        showScreen('screen-role');
-                    });
-
-                    hostConn.on('error', (err) => {
-                        showToast('Erro de conexão com o Host.', true);
-                    });
-                });
-
-                peer.on('error', (err) => {
-                    showToast('Sala não encontrada ou inacessível. Verifique o código!', true);
-                });
-            } catch (e) {
-                showToast('Erro ao inicializar conexão celular.', true);
+        function onPlayerConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                showToast("Conexão instável. Reconectando...", true);
+                setTimeout(() => {
+                    if (mqttClient) mqttClient.connect({ useSSL: true });
+                }, 2000);
             }
         }
 
         function confirmPlayerReadyGesture() {
             initAudioOnUserGesture();
             playSound('click');
-            document.getElementById('player-lobby-status').innerText = 'Pronto! Aguardando o Host iniciar as perguntas...';
+            document.getElementById('player-lobby-status').innerText = 'Pronto! Aguardando o Host iniciar as perguntas no projetor...';
             document.getElementById('btn-player-ready').classList.add('opacity-50', 'pointer-events-none');
             document.getElementById('btn-player-ready').innerText = 'PRONTO ✓';
         }
 
-        function handleHostMessage(data) {
+        function onPlayerMessageArrived(message) {
             try {
-                if (data.type === 'JOIN_ACK') {
+                const data = JSON.parse(message.payloadString);
+
+                if (data.type === 'JOIN_ACK' && data.playerId === playerId) {
                     document.getElementById('player-avatar-display').innerText = myPlayerAvatar;
                     document.getElementById('player-welcome-name').innerText = `Olá, ${myPlayerName}!`;
                     showScreen('screen-player-lobby');
@@ -1480,30 +1488,22 @@
                     document.getElementById('player-q-num').innerText = `Pergunta ${data.questionNumber}/${data.totalQuestions}`;
                     document.getElementById('player-timer-badge').innerText = `${data.timeLimit}s`;
                     showScreen('screen-player-question');
-                } else if (data.type === 'ANSWER_RECEIVED') {
-                    showScreen('screen-player-answered');
-                } else if (data.type === 'ROUND_RESULT') {
+                } else if (data.type === 'ROUND_RESULT' && data.targetPlayerId === playerId) {
                     displayPlayerFeedback(data);
                 } else if (data.type === 'GAME_OVER') {
                     showToast('Fim de jogo! Veja o pódio final no projetor.');
                 }
-            } catch (e) {
-                console.error("Error processing host message:", e);
-            }
+            } catch (e) {}
         }
 
         function submitPlayerAnswer(optionIndex) {
             initAudioOnUserGesture();
             playSound('click');
-            if (hostConn && hostConn.open) {
-                try {
-                    hostConn.send({
-                        type: 'SUBMIT_ANSWER',
-                        optionIndex: optionIndex,
-                        timeRemaining: timeRemaining
-                    });
-                } catch (e) {}
-            }
+            publishMqtt(`${getTopicPrefix()}/players/${playerId}`, {
+                type: 'SUBMIT_ANSWER',
+                optionIndex: optionIndex,
+                timeRemaining: timeRemaining
+            });
             showScreen('screen-player-answered');
         }
 
@@ -1536,7 +1536,7 @@
         }
 
 
-        /* ================= MODE 3: MESA REDONDA / REDE BLOQUEADA SENAI ================= */
+        /* ================= MODE 3: MESA REDONDA (LOCAL PROJETOR) ================= */
         function initLocalClassroomMode() {
             initAudioOnUserGesture();
             playSound('click');
@@ -1592,7 +1592,6 @@
         function loadLocalQuestion() {
             const q = QUIZ_QUESTIONS[currentQuestionIdx];
             document.getElementById('local-q-progress').innerText = `Pergunta ${currentQuestionIdx + 1}/${QUIZ_QUESTIONS.length}`;
-            document.getElementById('local-q-uc').innerText = q.uc;
             document.getElementById('local-question-text').innerText = q.question;
 
             for (let i = 0; i < 4; i++) {
@@ -1604,6 +1603,23 @@
 
             renderLocalScoreboard();
             renderLocalAwardButtons();
+
+            timeRemaining = QUESTION_TIME_LIMIT;
+            updateTimerUI('local-timer-bar', 'local-timer-text', timeRemaining, QUESTION_TIME_LIMIT);
+
+            clearInterval(questionTimer);
+            questionTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerUI('local-timer-bar', 'local-timer-text', timeRemaining, QUESTION_TIME_LIMIT);
+                if (timeRemaining <= 5 && timeRemaining > 0) playSound('tick');
+
+                if (timeRemaining <= 0) {
+                    clearInterval(questionTimer);
+                    playSound('wrong');
+                    revealLocalAnswer();
+                    showToast('Tempo esgotado para esta pergunta!', true);
+                }
+            }, 1000);
         }
 
         function renderLocalScoreboard() {
@@ -1629,7 +1645,7 @@
                     localScores[team] = (localScores[team] || 0) + 1000;
                     playSound('correct');
                     renderLocalScoreboard();
-                    showToast(`+1000 pontos concedidos para ${team}!`);
+                    showToast(`+1000 pontos para ${team}!`);
                 };
                 container.appendChild(btn);
             });
@@ -1650,22 +1666,24 @@
         }
 
         function nextLocalQuestion() {
+            clearInterval(questionTimer);
             playSound('click');
             currentQuestionIdx++;
             if (currentQuestionIdx < QUIZ_QUESTIONS.length) {
                 loadLocalQuestion();
             } else {
                 showToast('Fim das perguntas! Parabéns a todas as equipes.');
-                setTimeout(() => location.reload(), 2000);
+                setTimeout(() => location.reload(), 2500);
             }
         }
 
 
-        /* ================= MODE 4: SOLO GAME (SHOW DO MILHÃO) ================= */
+        /* ================= MODE 4: SOLO GAME (SHOW DO MILHÃO COM CRONÔMETRO DE 20S E LIVES) ================= */
         function startSoloGame() {
             initAudioOnUserGesture();
             playSound('click');
             soloQuestionIdx = 0;
+            soloLives = 3;
             soloSkips = 3;
             lifelineUnivUsed = false;
             lifelineCartasUsed = false;
@@ -1682,9 +1700,23 @@
             for (let i = PRIZE_VALUES.length - 1; i >= 0; i--) {
                 const item = document.createElement('div');
                 const isCurrent = (i === soloQuestionIdx);
-                item.className = `p-1.5 rounded-lg text-xs flex justify-between font-bold transition ${isCurrent ? 'bg-amber-400 text-slate-950 font-black ring-2 ring-amber-300' : 'bg-purple-950/60 text-purple-200 opacity-70'}`;
+                item.className = `p-1.5 rounded-lg text-xs flex justify-between font-bold transition ${isCurrent ? 'bg-amber-400 text-slate-950 font-black ring-2 ring-amber-300 scale-105' : 'bg-purple-950/60 text-purple-200 opacity-70'}`;
                 item.innerHTML = `<span>${i + 1}ª P.</span><span>${PRIZE_VALUES[i]}</span>`;
                 container.appendChild(item);
+            }
+
+            renderSoloLives();
+        }
+
+        function renderSoloLives() {
+            const container = document.getElementById('solo-lives-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < soloLives) {
+                    container.innerHTML += '<i class="fa-solid fa-heart text-red-500"></i>';
+                } else {
+                    container.innerHTML += '<i class="fa-regular fa-heart text-purple-400 opacity-40"></i>';
+                }
             }
         }
 
@@ -1702,6 +1734,7 @@
                 text.innerText = q.options[i];
                 btn.disabled = false;
                 btn.style.opacity = '1';
+                btn.classList.remove('ring-4', 'ring-amber-400', 'ring-rose-500');
             }
 
             document.getElementById('btn-life-univ').disabled = lifelineUnivUsed;
@@ -1710,26 +1743,106 @@
             document.getElementById('solo-skips-count').innerText = soloSkips;
 
             renderSoloPrizeLadder();
+
+            // ACTIVE 20-SECOND TIMER IN SOLO MODE
+            timeRemaining = QUESTION_TIME_LIMIT;
+            updateTimerUI('solo-timer-bar', 'solo-timer-text', timeRemaining, QUESTION_TIME_LIMIT);
+
+            clearInterval(questionTimer);
+            questionTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerUI('solo-timer-bar', 'solo-timer-text', timeRemaining, QUESTION_TIME_LIMIT);
+                if (timeRemaining <= 5 && timeRemaining > 0) playSound('tick');
+
+                if (timeRemaining <= 0) {
+                    clearInterval(questionTimer);
+                    handleSoloTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleSoloTimeout() {
+            playSound('wrong');
+            const q = QUIZ_QUESTIONS[soloQuestionIdx];
+            soloLives--;
+            renderSoloLives();
+
+            // Highlight correct option
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`solo-opt-btn-${i}`);
+                btn.disabled = true;
+                if (i === q.answer) {
+                    btn.classList.add('ring-4', 'ring-amber-400');
+                } else {
+                    btn.style.opacity = '0.35';
+                }
+            }
+
+            const resDiv = document.getElementById('solo-lifeline-result');
+            resDiv.innerHTML = `
+                <div class="text-rose-400 font-black text-sm uppercase"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Tempo Esgotado!</div>
+                <p class="text-xs text-purple-200">A resposta correta era: <b class="text-amber-300">${q.options[q.answer]}</b></p>
+            `;
+            resDiv.classList.remove('hidden');
+
+            if (soloLives > 0) {
+                showToast(`Tempo esgotado! Você perdeu 1 vida (${soloLives} restante(s)).`, true);
+                setTimeout(() => {
+                    soloQuestionIdx++;
+                    if (soloQuestionIdx < QUIZ_QUESTIONS.length) {
+                        loadSoloQuestion();
+                    } else {
+                        stopSoloGame();
+                    }
+                }, 2500);
+            } else {
+                showToast(`Tempo esgotado! Suas vidas acabaram!`, true);
+                setTimeout(stopSoloGame, 2500);
+            }
         }
 
         function submitSoloAnswer(optionIndex) {
+            clearInterval(questionTimer);
             initAudioOnUserGesture();
             const q = QUIZ_QUESTIONS[soloQuestionIdx];
+
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`solo-opt-btn-${i}`).disabled = true;
+            }
+
             if (optionIndex === q.answer) {
                 playSound('correct');
-                showToast(`Resposta Correta! Você ganhou ${PRIZE_VALUES[soloQuestionIdx]}`);
+                showToast(`Resposta Correta! Prêmio: ${PRIZE_VALUES[soloQuestionIdx]}`);
                 soloQuestionIdx++;
                 if (soloQuestionIdx < QUIZ_QUESTIONS.length) {
                     setTimeout(loadSoloQuestion, 1200);
                 } else {
                     playSound('fanfare');
-                    showToast('PARABÉNS! VOCÊ ACERTOU TODAS AS PERGUNTAS E GANHOU 1 MILHÃO!');
+                    showToast('PARABÉNS! VOCÊ ALCANÇOU 1 MILHÃO DE PONTOS!');
                     setTimeout(() => location.reload(), 4000);
                 }
             } else {
                 playSound('wrong');
-                showToast(`Resposta Errada! A resposta correta era: ${q.options[q.answer]}`, true);
-                setTimeout(() => location.reload(), 3000);
+                soloLives--;
+                renderSoloLives();
+
+                document.getElementById(`solo-opt-btn-${optionIndex}`).classList.add('ring-4', 'ring-rose-500');
+                document.getElementById(`solo-opt-btn-${q.answer}`).classList.add('ring-4', 'ring-amber-400');
+
+                if (soloLives > 0) {
+                    showToast(`Resposta Errada! Você perdeu 1 vida (${soloLives} restante(s)).`, true);
+                    setTimeout(() => {
+                        soloQuestionIdx++;
+                        if (soloQuestionIdx < QUIZ_QUESTIONS.length) {
+                            loadSoloQuestion();
+                        } else {
+                            stopSoloGame();
+                        }
+                    }, 2500);
+                } else {
+                    showToast(`Fim de jogo! Suas vidas acabaram.`, true);
+                    setTimeout(stopSoloGame, 2500);
+                }
             }
         }
 
@@ -1780,6 +1893,7 @@
 
         function useLifelinePular() {
             if (soloSkips <= 0) return;
+            clearInterval(questionTimer);
             initAudioOnUserGesture();
             playSound('click');
             soloSkips--;
@@ -1789,11 +1903,32 @@
         }
 
         function stopSoloGame() {
+            clearInterval(questionTimer);
             initAudioOnUserGesture();
             playSound('click');
             const currentPrize = soloQuestionIdx > 0 ? PRIZE_VALUES[soloQuestionIdx - 1] : 'R$ 0';
-            showToast(`Você parou! Seu prêmio final foi: ${currentPrize}`);
+            showToast(`Você encerrou a partida! Seu prêmio foi: ${currentPrize}`);
             setTimeout(() => location.reload(), 3000);
+        }
+
+        /* --- GENERIC TIMER PROGRESS BAR UI UPDATER --- */
+        function updateTimerUI(barId, textId, remaining, totalLimit) {
+            const bar = document.getElementById(barId);
+            const text = document.getElementById(textId);
+            if (text) text.innerText = `${remaining}s`;
+
+            if (bar) {
+                const pct = Math.max(0, (remaining / totalLimit) * 100);
+                bar.style.width = `${pct}%`;
+
+                if (pct > 50) {
+                    bar.className = 'bg-amber-400 h-full w-full timer-progress-bar';
+                } else if (pct > 25) {
+                    bar.className = 'bg-yellow-500 h-full w-full timer-progress-bar';
+                } else {
+                    bar.className = 'bg-rose-500 h-full w-full timer-progress-bar animate-pulse-fast';
+                }
+            }
         }
     </script>
 </body>
